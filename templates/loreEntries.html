@@ -1,0 +1,95 @@
+{% extends "parent.html" %}
+{% block title %}{{title}}{% endblock %}
+{% block content %}
+<h2>Lore Entries</h2>
+<form action="/lore-entries" method="GET">
+    Search Lore Entries
+    <input type="text" name="name" list="entries">
+    <input type="submit" value="Search">
+</form>
+<datalist id="entries">
+  {% for entry in raw_entries %}
+    <option>
+      {{entry.name}}
+    </option>
+  {% endfor %}
+</datalist>
+<div class="container top-buffer">
+  <nav aria-label="Page navigation example">
+    <ul class="pagination">
+      <li class="page-item {% if page == 1 %}disabled{% endif %}">
+        <a class="page-link" href="/lore-entries?page=1" aria-label="First">
+          <span aria-hidden="true">&laquo;</span>
+          <span class="sr-only">First</span>
+        </a>
+      </li>
+      {% if page > 2 %}
+        <li class="page-item"><a class="page-link" href="/lore-entries?page={{page-2}}">{{page-2}}</a></li>
+      {% endif %}
+      {% if page > 1 %}
+        <li class="page-item"><a class="page-link" href="/lore-entries?page={{page-1}}">{{page-1}}</a></li>
+      {% endif %}
+      <li class="page-item active"><span class="page-link">{{page}}<span class="sr-only">(current)</span></span></li>
+      {% if page < num_pages %}
+        <li class="page-item"><a class="page-link" href="/lore-entries?page={{page+1}}">{{page+1}}</a></li>
+      {% endif %}
+      {% if page < num_pages - 1 %}
+        <li class="page-item"><a class="page-link" href="/lore-entries?page={{page+2}}">{{page+2}}</a></li>
+      {% endif %}
+      <li class="page-item {% if page == num_pages %}disabled{% endif %}">
+        <a class="page-link" href="/lore-entries?page={{num_pages}}" aria-label="Last">
+          <span aria-hidden="true">&raquo;</span>
+          <span class="sr-only">Lasr</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+<div class="container">
+  {% for sub_cards in cards %}
+    <div class="row top-buffer">
+      {% for card in sub_cards %}
+        <div class="col-sm-6 data-card">
+          <a href="/lore-entries/{{card.hashName}}" style="text-decoration: none;">
+            <!-- 728x560 is default image size for cards -->
+            <img src="{{card.fullImageUrl}}" alt="{{card.name}}" height="270" width="490">
+            <div class="opacity-overlay"></div>
+            <div class="card-details">{{card.name}}</div>
+          </a>
+        </div>
+      {% endfor %}
+    </div>
+  {% endfor %}
+</div>
+<div class="container top-buffer">
+  <nav aria-label="Page navigation example">
+    <ul class="pagination">
+      <li class="page-item {% if page == 1 %}disabled{% endif %}">
+        <a class="page-link" href="/lore-entries?page=1" aria-label="First">
+          <span aria-hidden="true">&laquo;</span>
+          <span class="sr-only">First</span>
+        </a>
+      </li>
+      {% if page > 2 %}
+        <li class="page-item"><a class="page-link" href="/lore-entries?page={{page-2}}">{{page-2}}</a></li>
+      {% endif %}
+      {% if page > 1 %}
+        <li class="page-item"><a class="page-link" href="/lore-entries?page={{page-1}}">{{page-1}}</a></li>
+      {% endif %}
+      <li class="page-item active"><span class="page-link">{{page}}<span class="sr-only">(current)</span></span></li>
+      {% if page < num_pages %}
+        <li class="page-item"><a class="page-link" href="/lore-entries?page={{page+1}}">{{page+1}}</a></li>
+      {% endif %}
+      {% if page < num_pages - 1 %}
+        <li class="page-item"><a class="page-link" href="/lore-entries?page={{page+2}}">{{page+2}}</a></li>
+      {% endif %}
+      <li class="page-item {% if page == num_pages %}disabled{% endif %}">
+        <a class="page-link" href="/lore-entries?page={{num_pages}}" aria-label="Last">
+          <span aria-hidden="true">&raquo;</span>
+          <span class="sr-only">Lasr</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+{% endblock %}

@@ -1,0 +1,95 @@
+{% extends "parent.html" %}
+{% block title %}{{title}}{% endblock %}
+{% block content %}
+<h2>Items</h2>
+<form action="/items" method="GET">
+    Search Items
+    <input type="text" name="name" list="items">
+    <input type="submit" value="Search">
+</form>
+<div class="container top-buffer">
+  <nav aria-label="Page navigation example">
+    <ul class="pagination">
+      <li class="page-item {% if page == 1 %}disabled{% endif %}">
+        <a class="page-link" href="/items?page=1" aria-label="First">
+          <span aria-hidden="true">&laquo;</span>
+          <span class="sr-only">First</span>
+        </a>
+      </li>
+      {% if page > 2 %}
+        <li class="page-item"><a class="page-link" href="/items?page={{page-2}}">{{page-2}}</a></li>
+      {% endif %}
+      {% if page > 1 %}
+        <li class="page-item"><a class="page-link" href="/items?page={{page-1}}">{{page-1}}</a></li>
+      {% endif %}
+      <li class="page-item active"><span class="page-link">{{page}}<span class="sr-only">(current)</span></span></li>
+      {% if page < num_pages %}
+        <li class="page-item"><a class="page-link" href="/items?page={{page+1}}">{{page+1}}</a></li>
+      {% endif %}
+      {% if page < num_pages - 1 %}
+        <li class="page-item"><a class="page-link" href="/items?page={{page+2}}">{{page+2}}</a></li>
+      {% endif %}
+      <li class="page-item {% if page == num_pages %}disabled{% endif %}">
+        <a class="page-link" href="/items?page={{num_pages}}" aria-label="Last">
+          <span aria-hidden="true">&raquo;</span>
+          <span class="sr-only">Lasr</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+<datalist id="items">
+  {% for item in raw_items %}
+    <option>
+      {{item.name}}
+    </option>
+  {% endfor %}
+</datalist>
+<div class="container">
+  {% for sub_items in items %}
+    <div class="row top-buffer">
+      {% for item in sub_items %}
+        <div class="col-sm-3 item-card">
+          <a href="/items/{{item.hashName}}" style="text-decoration: none;">
+            <!-- 728x560 is default image size for cards -->
+            <img src="{{item.fullImageUrl}}" alt="{{item.name}}" height="250" width="250">
+            <div class="opacity-overlay"></div>
+            <div class="card-details">{{item.name}}</div>
+          </a>
+        </div>
+      {% endfor %}
+    </div>
+  {% endfor %}
+</div>
+<div class="container top-buffer">
+  <nav aria-label="Page navigation example">
+    <ul class="pagination">
+      <li class="page-item {% if page == 1 %}disabled{% endif %}">
+        <a class="page-link" href="/items?page=1" aria-label="First">
+          <span aria-hidden="true">&laquo;</span>
+          <span class="sr-only">First</span>
+        </a>
+      </li>
+      {% if page > 2 %}
+        <li class="page-item"><a class="page-link" href="/items?page={{page-2}}">{{page-2}}</a></li>
+      {% endif %}
+      {% if page > 1 %}
+        <li class="page-item"><a class="page-link" href="/items?page={{page-1}}">{{page-1}}</a></li>
+      {% endif %}
+      <li class="page-item active"><span class="page-link">{{page}}<span class="sr-only">(current)</span></span></li>
+      {% if page < num_pages %}
+        <li class="page-item"><a class="page-link" href="/items?page={{page+1}}">{{page+1}}</a></li>
+      {% endif %}
+      {% if page < num_pages - 1 %}
+        <li class="page-item"><a class="page-link" href="/items?page={{page+2}}">{{page+2}}</a></li>
+      {% endif %}
+      <li class="page-item {% if page == num_pages %}disabled{% endif %}">
+        <a class="page-link" href="/items?page={{num_pages}}" aria-label="Last">
+          <span aria-hidden="true">&raquo;</span>
+          <span class="sr-only">Lasr</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+{% endblock %}

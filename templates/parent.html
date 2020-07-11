@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" rel="stylesheet"
+      integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/solid.css"
+      integrity="sha384-+0VIRx+yz1WBcCTXBkVQYIBVNEFH1eP6Zknm16roZCyeNg2maWEpk/l/KsyFKs7G" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/fontawesome.css"
+      integrity="sha384-jLuaxTTBR42U2qJ/pm4JRouHkEDHkVqH0T1nyQXn1mZ7Snycpf6Rl25VBNthU4z0" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
+    <!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>-->
+    <style>
+      img.profile {
+        border-radius: 50%;
+        border: 2px solid white;
+      }
+      #container {
+        padding: 16px;
+        margin-top: 50px;
+      }
+      .sticky {
+        position: fixed;
+        top: 0;
+        width: 100%;
+        z-index: 1;
+      }
+
+      .popup {
+        position: relative;
+        display: inline-block;
+        cursor: pointer;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+      }
+      .popup .popuptext {
+        visibility: hidden;
+        text-decoration: none;
+        width: 160px;
+        background-color: #555;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 8px 0;
+        position: absolute;
+        z-index: 2;
+        top: 125%;
+        left: 50%;
+        margin-left: -80px;
+      }
+      .popup .popuptext:hover{
+        background-color: #666;
+      }
+      .popup .show {
+        visibility: visible;
+        -webkit-animation: fadeIn 1s;
+        animation: fadeIn 1s;
+      }
+      @-webkit-keyframes fadeIn {
+        from {opacity: 0;}
+        to {opacity: 1;}
+      }
+      @keyframes fadeIn {
+        from {opacity: 0;}
+        to {opacity:1 ;}
+      }
+      .category {
+        color: #000;
+        text-decoration: none;
+      }
+      .grimoire-card, .item-card {
+        position: relative;
+      }
+      .grimoire-card .opacity-overlay, .item-card .opacity-overlay {
+        position: absolute;
+        opacity: 0.6;
+        top: 0;
+        bottom: 0;
+        width: 250px;
+        transition: opacity 200ms ease-out;
+        background-color: #F6F6F3;
+      }
+      .data-card .opacity-overlay {
+        position: absolute;
+        opacity: 0.6;
+        top: 0;
+        bottom: 0;
+        width: 490px;
+        transition: opacity 200ms ease-out;
+        background-color: #F6F6F3;
+      }
+      .grimoire-card:hover .opacity-overlay, .item-card:hover .opacity-overlay, .data-card:hover .opacity-overlay {
+        opacity: 0;
+      }
+      .card-details {
+        position: absolute;
+        z-index: 10;
+        text-decoration: none;
+        color: #000000;
+        bottom: 10px;
+        left: 30px;
+        font-family: 'Montserrat', sans-serif;
+        font-size: 20px;
+        transition: color 200ms ease-out;
+        width: 75%;
+      }
+      .grimoire-card:hover .card-details, .item-card:hover .card-details, .data-card:hover .card-details {
+        color: #ffffff;
+      }
+      .top-buffer {
+        margin-top: 25px;
+      }
+      .pagination {
+        justify-content: center;
+      }
+    </style>
+    <title>{% block title %}{% endblock %}</title>
+  </head>
+
+  <body>
+    <nav id="navbar" class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <div class="container">
+        <a class="navbar-brand" href="#">Hero's Lore</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+          aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+                <a href="/" class="nav-link">Home</a>
+            </li>
+            <li class="nav-item">
+                <a href="/categories" class="nav-link">Categories</a>
+            </li>
+            <li class="nav-item">
+                <a href="/grimoire-cards" class="nav-link">Grimoire Cards</a>
+            </li>
+            <li class="nav-item">
+                <a href="/items" class="nav-link">Items</a>
+            </li>
+            <li class="nav-item">
+                <a href="/lore-entries" class="nav-link">Lore Entries</a>
+            </li>
+            <li class="nav-item">
+                <a href="/transcripts" class="nav-link">Dialog Transcripts</a>
+            </li>
+            <li class="nav-item">
+                <a href="/records" class="nav-link">Records</a>
+            </li>
+          </ul>
+        </div>
+        <!--<div class="popup" onclick="showLogout()">
+          <img class="profile" src="{% block avatar %}{{avatar}}{% endblock %}" alt="Profile Picture" height="50" width="50">
+          <a href="/logout" class="popuptext" id="logout">
+            <span>Logout</span>
+          </a>
+        </div>-->
+      </div>
+    </nav>
+
+    <div id="container" class="container">
+      {% block content %}{% endblock %}
+    </div>
+    <script type="text/javascript">
+      window.onscroll = function() {stickyNav()};
+
+      var nav = document.getElementById("navbar");
+      var sticky = navbar.offsetTop;
+
+      function stickyNav() {
+        if (window.pageYOffset >= sticky) {
+          navbar.classList.add("sticky");
+        } else {
+          navbad.classList.remove('sticky');
+        }
+      }
+
+      function showLogout() {
+        var popup = document.getElementById('logout');
+        popup.classList.toggle("show");
+      }
+    </script>
+  </body>
+</html>
