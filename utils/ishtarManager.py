@@ -2,10 +2,14 @@ import os
 from enum import Enum
 import pickle
 import difflib
+import json
+import roman
+import html
 
 import requests
 
 from utils.progressBar import ProgressBar
+from data.collectionsList import LORE_BOOK_COLLECTIONS, CHAPTERS
 
 class Category:
     def __init__(self, data):
@@ -32,7 +36,7 @@ class GrimoireCard:
         self.fullImageUrl = data.get('full_image_url')
         self.intro = data.get('intro')
         self.introAttribution = data.get('intro_attribution')
-        self.description = data.get('description')
+        self.description = html.unescape(data.get('description')).replace('<br/>', '\n') if data.get('description') else None
         self.bungieDeleted = data.get('bungie_deleted')
         if data.get('categories'):
             self.categories = [Category(i) for i in data.get('categories')]
@@ -50,7 +54,7 @@ class Item:
         self.imageUrl = data.get('image_url')
         self.fullImageUrl = data.get('full_image_url')
         self.displaySource = data.get('display_source')
-        self.description = data.get('description')
+        self.description = html.unescape(data.get('description')).replace('<br/>', '\n') if data.get('description') else None
         self.bungieDeleted = data.get('bungie_deleted')
         if data.get('categories'):
             self.categories = [Category(i) for i in data.get('categories')]
@@ -70,7 +74,7 @@ class LoreEntry:
         if self.fullImageUrl == '':
             self.fullImageUrl = "./static/missing_entry.png"
         self.subtitle = data.get('subtitle')
-        self.description = data.get('description')
+        self.description = html.unescape(data.get('description')).replace('<br/>', '\n') if data.get('description') else None
         self.bungieDeleted = data.get('bungie_deleted')
         if data.get('categories'):
             self.categories = [Category(i) for i in data.get('categories')]
@@ -99,7 +103,7 @@ class Record:
         self.bungieRef = data.get('bungie_ref')
         self.imageUrl = data.get('image_url')
         self.fullImageUrl = data.get('full_image_url')
-        self.description = data.get('description')
+        self.description = html.unescape(data.get('description')).replace('<br/>', '\n') if data.get('description') else None
         if data.get('categories'):
             self.categories = [Category(i) for i in data.get('categories')]
         else:
@@ -122,6 +126,9 @@ class IshtarManager:
         self.dataFileLoc = os.path.abspath(dataFileLoc)
         self.path = os.path.dirname(self.dataFileLoc)
         self._session = requests.Session()
+
+        self.LORE_BOOK_COLLECTIONS = LORE_BOOK_COLLECTIONS
+        self.CHAPTERS = CHAPTERS
 
         if not os.path.isfile(self.dataFileLoc):
             self.updateCollective()
@@ -185,6 +192,58 @@ class IshtarManager:
         else:
             raise Exception(f"Failed to retrieve Ishtar Collective routing: {res.status_code}")
 
+    def buildCollections(self):
+        collected = {}
+        for card in self.grimoireCards:
+            for category in card.categories:
+                for collection in self.LORE_BOOK_COLLECTIONS["D1"].keys():
+                    if not collection in collected.keys():
+                        collected[collection] = {"cards": []}
+                    for book in self.LORE_BOOK_COLLECTIONS["D1"][collection]:
+                        if book.lower() in category.name.lower():
+                            collected[collection]['cards'].append(card)
+
+        for entry in self.loreEntries:
+            for category in entry.categories:
+                for collection in self.LORE_BOOK_COLLECTIONS["D2"].keys():
+                    if not collection in collected.keys():
+                        collected[collection] = {"books": {}}
+                    for book in self.LORE_BOOK_COLLECTIONS["D2"][collection]:
+                        if book.lower() in category.name.lower():
+                            if not book in collected[collection]["books"].keys():
+                                collected[collection]["books"][book] = []
+                            collected[collection]["books"][book].append(entry)
+
+        for entry in collected.keys():
+            if 'cards' in collected[entry].keys():
+                collected[entry]['cards'] = sorted(collected[entry]['cards'], key = self.sortD1Collection)
+            elif 'books' in collected[entry].keys():
+                collected[entry]['books'] = self.sortD2Books(collected[entry]['books'])
+
+        return collected
+
+    def sortD1Collection(self, x):
+        x = x.name
+        try:
+            s = ':'.join(x.split(':')[1:])
+            r = roman.fromRoman(x.split(':')[0])
+        except:
+            s = x
+            if 'Curiosity' in s:
+                r = 0
+            elif 'Insight' in s:
+                r = 200
+            else:
+                r = 0
+        finally:
+            return r, s
+
+    def sortD2Books(self, books):
+        res = {}
+        for book in books.keys():
+            res[book] = sorted(books[book], key = lambda x: self.CHAPTERS[book].index(x.name))
+        return res
+
     def loadItemByName(self, name):
         name = difflib.get_close_matches(name, [item.name for item in self.items], n=1)
         if len(name) > 0:
@@ -214,3 +273,7 @@ class IshtarManager:
             if entry.name in names:
                 names[names.index(entry.name)] = entry
         return names
+
+if __name__ == "__main__":
+    manager = IshtarManager('./data/EncryptedIshtarData.pickle')
+    manager.buildCollections()

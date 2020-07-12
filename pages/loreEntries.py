@@ -29,6 +29,7 @@ def show_entries():
         num_pages = ceil(len(manager.loreEntries)/16)
         adjusted_cards = [[]]
         i = 0
+        
         for card in manager.loreEntries:
             if card.fullImageUrl == "":
                 for category in card.categories:
